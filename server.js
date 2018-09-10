@@ -50,7 +50,7 @@ app.get ('/invoices/:invoice_identifier', function (request, response) {
     }
     if ( response_variables == undefined) {
       console.log(jsonArray[0])
-      console.log('Invoice ID: ', invoice_id, ' was not found.');
+      console.log('Invoice ID: ', invoice_identifier, ' was not found.');
       // Decide what to render here. probably a 404 page.
 
     }
