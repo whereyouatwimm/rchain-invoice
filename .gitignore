@@ -1,2 +1,3 @@
 node_modules/*
 modules/google_generated_creds.json
+.env
