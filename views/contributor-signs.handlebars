@@ -1,0 +1,89 @@
+  <div class="container">
+   <div class="table-responsive">
+    <h1 align="center">RContributor Invoice Agreement</h1>
+    <br />
+    <div align="center">      
+    <section>
+    <p>
+    </p>  
+    <br/>
+    <p>  
+      Thank you {{ user }} for your contribution during August.
+      You have been voted the reward detailed in your invoice {{invoice_name}}. 
+    <br/>
+    </p>
+    <p>        
+      Once you have confirmed and agreed to the information below, 
+      your reward will be processed. 
+      The voted reward will be tranferred to 
+      your ethereum address, completing your contribution and reward. 
+    <br/>
+    <br/>
+    <br/>
+    </p>
+        <form>
+          <p>
+            Please enter your ethereum address below. 
+            It will be verified against the one we have on file. 
+          </p>
+            <input id="eth_address" name="eth_address" type="text" class="required">
+            <br/>
+            <br/>
+          <p>
+            Please agree to the amount voted. 
+          </p>
+            <input id="invoice_amount" name="invoice_amount" type="text" class="required">
+            <br/>
+            <br/>
+            <br/>
+            <button type="button" name="load_reward_data" id="load_reward_data" class="btn btn-info" onClick="return validateAgree();">Agree</button>
+            <button type="button" name="load_contributor_data" id="load_contributor_data" class="btn btn-info" onClick="return validateDisagree();">Disagree</button>
+        </form>
+      </section>
+      <br/>
+      <p>
+    <p>        
+    <br/>
+    <br/>
+      Thank you for your contribution! 
+    <br/>
+    </p>
+        Special thanks to @lapin7 who designed and implemented the original version of this contract. 
+      </p>
+      </p>
+    <br />
+    </div>
+   </div>
+  </div>
+
+<script>
+function validateAgree() {
+  
+    var invoice_amount = document.getElementById('invoice_amount').value;
+    var eth_address = document.getElementById('eth_address').value;
+  
+    if (eth_address == {{ contributor_eth_address }} && invoice_amount == {{ reward_usd }}) {
+        // alert('User agrees. Input data provided matches.');
+        
+        // send a post request to /invoices/:id/agreement 
+        // in the body of the request, send the agreed upon eth_address & invoice_amount in the body.
+        var data = { eth_address: eth_address, invoice_amount: invoice_amount };
+        $.ajax({
+          type: "POST",
+          url: "/invoices/{{invoice_id}}/agree",
+          data: data,
+          dataType: "json",
+          contentType:"application/json"
+        });
+       window.location.replace("/invoices/{{ invoice_id }}/agree");
+    } else if (eth_address != {{ contributor_eth_address }} || invoice_amount != {{ reward_usd }}) {
+            alert("Data provided doesn't match the values on file.")
+    }
+    
+}
+
+function validateDisagree() {
+    // If disagree is clicked, we don't have to do any error checking. 
+    window.location.replace("/invoices/{{ invoice_id }}/disagree");   
+}
+</script>

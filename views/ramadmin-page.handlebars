@@ -1,0 +1,22 @@
+  <div class="container">
+   <div class="table-responsive">
+    <h1 align="center">InvoiceApp </h1>
+    <br />
+    <div align="center">
+    <label for="month">Month: </label>
+      <!-- This input box does nothing for now but should be used to select the month that we're working in, in the future. -->
+    <input type="text" id="month" name="month"/>
+    <br />
+     <button type="button" name="load_rewards_summary_data" id="load_rewards_summary_data" class="btn btn-info">Load Rewards Summary</button>
+     <button type="button" name="load_rewards_detail_data" id="load_rewards_detail_data" class="btn btn-info">Load Rewards Details</button>
+     <button type="button" name="load_contributor_data" id="load_contributor_data" class="btn btn-info">Load Contributor Data</button>
+     <br \>
+     <br \>
+     <button type="button" name="load_invoice_data" id="load_invoice_data" class="btn btn-info">Create and Load Invoice Summary Data</button>
+    </div>
+    <br />
+    <div id="employee_table">
+    </div>
+   </div>
+  </div>
+  <script src="js/controllers/dataController.js"></script>
