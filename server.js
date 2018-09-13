@@ -28,47 +28,37 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 //app.use(bodyParser);
 // http://expressjs.com/en/starter/static-files.html
 // serves all of the client files in public/*.*
-// app.use(express.static('public')); 
+app.use(express.static('public')); 
 
 
 // Contributor agreement endpoints:
 app.get ('/invoices/:notify_url', function (request, response) {
   var notify_url = request.params.notify_url;
 
-  // look up notify_url in invoice_summary, return data in a json object as response_variables
-    // invoices.returnWorksheetJson('1DOwdYxhKIvJuYgQe4xv6-7gZ35bjyNZoQ5uHviFYoaA', 'invoices_summary', function (err, jsonArray){
-    // if (err) { 
-    //   console.error('an error occured while pulling invoices_summary data');
-    //   return;
-    // }
-    fs.readFile('data/201808-contributor.json', function read (err, data){ 
-      if (err) {
+  fs.readFile('data/201808-contributor.json', function read (err, data){ 
+    if (err) {
         throw err;
       }
      
-
-    // console.log(notify_url);
-   // console.log(jsonArray);
-   var jsonArray = JSON.parse(data);
-    // read json file from disk, read google sheets to json, of columns containing necesary data.
+  var jsonArray = JSON.parse(data);
 
     //compare the provided notify_url here
-    for (x=0; x < jsonArray.length; x++) {
-      if (jsonArray[x]['notify_url'] == notify_url) {
-        console.log(jsonArray[x]);
-        var response_variables = jsonArray[x];
-        break
-      } 
+  for (x=0; x < jsonArray.length; x++) {
+    if (jsonArray[x]['notify_url'] == notify_url) {
+      console.log(jsonArray[x]);
+      var response_variables = jsonArray[x];
+      break
+    } 
 
-    }
-    if (response_variables == undefined) {
-      //console.log(jsonArray)
-      console.log('Invoice ID: ', notify_url, ' was not found.');
-      // Invoice ID not found. Decide what to render here. probably a 404 page / redirect to /?.
+  }
+  if (response_variables == undefined) {
+    console.log('Invoice ID: ', notify_url, ' was not found.');
+    // Invoice ID not found, render error.
+    response.render('contributor-error');
+    return
+  }
 
-    }
-
-    response.render('contributor-signs', response_variables);
+  response.render('contributor-signs', response_variables);
   });
 });
 
@@ -76,19 +66,18 @@ app.get ('/invoices/:notify_url', function (request, response) {
 // this receives data from the agree button.
 app.get ('/invoices/:notify_url/agree', function (request, response) {
   console.log('user agrees: ', request.params.notify_url);
-  console.log(request.body);
-  
 
   var notify_url = request.params.notify_url
-
- 
-
   var content;
-// First I want to read the file
+
+  // There is likely a better way to do this. Maybe sqlite?
+  // Currently, it reads an array of JSON objects from a file and then iterates through each invoice, and checks the notify_url param to log agreement.
+  // From the discussions I've had, we don't want to use a DB locally but we can if the coop agrees. Sqlite might be a comprimise. - wimm.
+
   fs.readFile('data/201808-contributor.json', function read(err, data) {
     if (err) {
         throw err;
-    }
+      }
     content = JSON.parse(data);
 
     // Invoke the next step here however you like
@@ -96,27 +85,24 @@ app.get ('/invoices/:notify_url/agree', function (request, response) {
     processFile();          // Or put the next step in a function and invoke it
 });
 
-function processFile() {
-  for (var i=0; i < content.length; i++) {
-    if (content[i]['notify_url'] == notify_url) {
-      console.log(content[i]);
-      content[i]['contributor_agree'] = 'True'
-      content[i]['agree_time'] = Date()
-      console.log(content[i]);
-      fs.writeFile("data/201808-contributor.json", JSON.stringify(content), function(err) {
-      if(err){ 
-        console.log('an error occured saving contributor data: ', err)
+  function processFile() {
+    for (var i=0; i < content.length; i++) {
+      if (content[i]['notify_url'] == notify_url) {
+        console.log(content[i]);
+        content[i]['contributor_agree'] = 'True'
+        content[i]['agree_time'] = Date()
+        console.log(content[i]);
+        fs.writeFile("data/201808-contributor.json", JSON.stringify(content), function(err) {
+        if(err){ 
+          console.log('an error occured saving contributor data: ', err)
+            }
+        //console.log('the file has been written.')
+        })
       }
-      console.log('the file has been written.')
-    })
     }
-    console.log(content);
+  }
 
-}
-}
-
-  
-  response.render('contributor-agrees');
+  response.render('contributor-followup');
 });
 
 
@@ -124,21 +110,19 @@ app.get ('/invoices/:notify_url/disagree', function (request, response) {
   console.log('user disagrees ', request.params.notify_url);
 
   var notify_url = request.params.notify_url
+  var content;
 
- 
 
-    var content;
-  // First I want to read the file
-    fs.readFile('data/201808-contributor.json', function read(err, data) {
-      if (err) {
-          throw err;
+  fs.readFile('data/201808-contributor.json', function read(err, data) {
+    if (err) {
+        throw err;
       }
-      content = JSON.parse(data);
+    content = JSON.parse(data);
 
-      // Invoke the next step here however you like
-      //console.log(content);   // Put all of the code here (not the best solution)
-      processFile();          // Or put the next step in a function and invoke it
-  });
+    // Invoke the next step here however you like
+    //console.log(content);   // Put all of the code here (not the best solution)
+    processFile();          // Or put the next step in a function and invoke it
+});
 
   function processFile() {
     for (var i=0; i < content.length; i++) {
@@ -146,60 +130,64 @@ app.get ('/invoices/:notify_url/disagree', function (request, response) {
         console.log(content[i]);
         content[i]['contributor_agree'] = 'False'
         content[i]['agree_time'] = Date()
-        // console.log(content[i]);
+        console.log(content[i]);
         fs.writeFile("data/201808-contributor.json", JSON.stringify(content), function(err) {
-          if(err){ 
-            console.log('an error occured saving contributor data: ', err)
+        if(err){ 
+          console.log('an error occured saving contributor data: ', err)
             }
-
-          console.log('the file has been written.')
-          })
+        //console.log('the file has been written.')
+        })
       }
-      console.log(content);
-
     }
   }
 
     
-  response.render('contributor-disagrees');
+  response.render('contributor-followup');
 });       
 
-app.get ('/admin/initiate', function(request, response) {
-  // Read from worksheet, save resulting json to file to record agree/disagrees. 
-  invoices.returnWorksheetJson('1DOwdYxhKIvJuYgQe4xv6-7gZ35bjyNZoQ5uHviFYoaA', 'invoices_summary', function(err, invoice_json) {
-    if (err) { 
-      console.error('an error occured while pulling the contributor data');
-      return;
-    }
-
-   
-    var invoices_stored_array = []
-    console.log(invoice_json[0].length);
-    for (x=0; x<=54;x++){
-    var invoices_stored_json = {} 
-    invoices_stored_json['reward_usd'] = invoice_json[0][x]['reward_usd'];
-    invoices_stored_json['eth_hash'] = invoice_json[0][x]['eth_hash'];
-    invoices_stored_json['notify_url'] = invoice_json[0][x]['notify_url'];
-    invoices_stored_json['contributor_agree'] = '';
-    invoices_stored_json['agree_time'] = '';
-    invoices_stored_array.push(invoices_stored_json);
-    }
+// app.get ('/admin/initiate', function(request, response) {
+//   // Read from worksheet, save resulting json to file to record agree/disagrees. 
+//   invoices.returnWorksheetJson('1DOwdYxhKIvJuYgQe4xv6-7gZ35bjyNZoQ5uHviFYoaA', 'invoices_summary', function(err, invoice_json) {
+//     if (err) { 
+//       console.error('an error occured while pulling the contributor data');
+//       return;
+//     }
 
 
-    fs.writeFile("data/201808-contributor.json", JSON.stringify(invoices_stored_array), function(err) {
-      if(err){ 
-        console.log('an error occured saving contributor data: ', err)
-      }
-      console.log('the file has been written.')
-    })
+//     var invoices_stored_array = []
+//     console.log(invoice_json[0].length);
+//     // TODO: figure out why invoice_json[0].length doesn't match the length of this months contributors. 
+//     for (x=0; x<=54;x++){
+//     var invoices_stored_json = {}
+//     invoices_stored_json['invoice_pdf_name'] = invoice_json[0][x]['invoice_pdf_name']; 
+//     invoices_stored_json['reward_usd'] = invoice_json[0][x]['reward_usd'];
+//     invoices_stored_json['eth_hash'] = invoice_json[0][x]['eth_hash'];
+//     invoices_stored_json['notify_url'] = invoice_json[0][x]['notify_url'];
+//     invoices_stored_json['contributor_agree'] = '';
+//     invoices_stored_json['agree_time'] = '';
+//     invoices_stored_array.push(invoices_stored_json);
+//     }
 
-    //console.log(invoices_stored_array);
-    })
 
- response.render('contributor-signs')
-});
+//     fs.writeFile("data/201808-contributor.json", JSON.stringify(invoices_stored_array), function(err) {
+//       if(err){ 
+//         console.log('an error occured saving contributor data: ', err)
+//       }
+//       console.log('the file has been written.')
+//     })
+//     fs.writeFile("data/backup-201808-contributor.json", JSON.stringify(invoices_stored_array), function(err) {
+//       if(err){ 
+//         console.log('an error occured saving contributor data: ', err)
+//       }
+//       console.log('a backup file has been written.')
+//     })
+//     //console.log(invoices_stored_array);
+//     })
+
+//  response.render('contributor-signs')
+// });
 
 // listen for requests :)
-var listener = app.listen(3001, function() {
+var listener = app.listen(3000, function() {
   console.log('Your app is listening on port ' + listener.address().port);
 });

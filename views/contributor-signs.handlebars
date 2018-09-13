@@ -1,57 +1,40 @@
   <div class="container">
    <div class="table-responsive">
     <h1 align="center">RContributor Invoice Agreement</h1>
-    <br />
+
     <div align="center">      
     <section>
-    <p>
-    </p>  
+
     <br/>
-    <p>  
-      Thank you {{ user }} for your contribution during August.
-      You have been voted the reward detailed in your invoice {{invoice_name}}. 
-    <br/>
-    </p>
     <p>        
-      Once you have confirmed and agreed to the information below, 
-      your reward will be processed. 
-      The voted reward will be tranferred to 
-      your ethereum address, completing your contribution and reward. 
-    <br/>
-    <br/>
-    <br/>
+     Please check your invoice carefully and confirm the information below.</p>
     </p>
+    <br/>
+      <br/>
         <form>
           <p>
-            Please enter your ethereum address below. 
-            It will be verified against the one we have on file. 
+            Please enter the Ethereum address you have on file below.
           </p>
             <input id="eth_address" name="eth_address" type="text" class="required">
-            <br/>
-            <br/>
+          <br/>
+          <br/>
           <p>
-            Please agree to the amount voted. 
+            Please agree to the reward voted by entering the amount below.
           </p>
             <input id="invoice_amount" name="invoice_amount" type="text" class="required">
             <br/>
             <br/>
-            <br/>
-            <button type="button" name="load_reward_data" id="load_reward_data" class="btn btn-info" onClick="return validateAgree();">Agree</button>
-            <button type="button" name="load_contributor_data" id="load_contributor_data" class="btn btn-info" onClick="return validateDisagree();">Disagree</button>
+          <p>
+            Please e-sign by clicking "I Agree".
+          </p>
+            <button type="button" name="load_reward_data" id="load_reward_data" class="btn btn-info" style="width:100px;" onClick="return validateAgree();">I Agree</button>
+            <button type="button" name="load_contributor_data" id="load_contributor_data" class="btn btn-info" style="width:100px;" onClick="return validateDisagree();">I Disagree</button>
         </form>
       </section>
       <br/>
-      <p>
-    <p>        
-    <br/>
-    <br/>
-      Thank you for your contribution! 
-    <br/>
-    </p>
-        Special thanks to @lapin7 who designed and implemented the original version of this contract. 
+      <br/>
+      <p>    Thank you for your contribution!
       </p>
-      </p>
-    <br />
     </div>
    </div>
   </div>
@@ -63,7 +46,8 @@ function validateAgree() {
   
     var invoice_amount = document.getElementById('invoice_amount').value;
     var eth_address = document.getElementById('eth_address').value;
-    var md5_eth = MD5(eth_address);
+    var lowered_eth = eth_address.toLowerCase();
+    var md5_eth = MD5(lowered_eth);
     console.log(md5_eth);
     if (md5_eth == '{{ eth_hash }}' && invoice_amount == {{ reward_usd }}) {
         // alert('User agrees. Input data provided matches.');
