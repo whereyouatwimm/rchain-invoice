@@ -1,7 +1,7 @@
-#Rchain Invoice Agreement application management.
+# Rchain Invoice Agreement application management.
 
 
-##Starting the agreeement collection process:
+## Starting the agreeement collection process:
 
 To start the application, we need to create the file that agreements are stored to. You'll need to provide the hashed invoice data from google sheets in csv format, and pass it when calling the script. 
 
