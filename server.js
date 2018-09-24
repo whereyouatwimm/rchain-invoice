@@ -29,7 +29,9 @@ app.get ('/:notify_url', function (request, response) {
 
   fs.readFile('data/agreementLog.json', function read (err, data){ 
     if (err) {
-        throw err;
+        console.log(err);
+        response.render('main-landing');
+        return
       }
      
   var jsonArray = JSON.parse(data);
@@ -46,7 +48,6 @@ app.get ('/:notify_url', function (request, response) {
   if (response_variables == undefined) {
     console.log('Invoice ID: ', notify_url, ' was not found.');
     // Invoice ID not found, render error.
-
     response.render('contributor-followup', { error: 1 } );
     return
   }
@@ -66,7 +67,9 @@ app.get ('/:notify_url/agree', function (request, response) {
 
   fs.readFile('data/agreementLog.json', function read(err, data) {
     if (err) {
-        throw err;
+        console.log(err);
+        response.render('main-landing');
+        return
       }
     content = JSON.parse(data);
 
@@ -105,7 +108,9 @@ app.get ('/:notify_url/disagree', function (request, response) {
 
   fs.readFile('data/agreementLog.json', function read(err, data) {
     if (err) {
-        throw err;
+        console.log(err);
+        response.render('main-landing');
+        return
       }
     content = JSON.parse(data);
 
