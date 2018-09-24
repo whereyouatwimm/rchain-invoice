@@ -3,18 +3,18 @@ const jsonexport = require('jsonexport');
 
 
 const filename = 'agreementLog.json'
-// read the contributor file
+
 fs.readFile("../data/" + filename, function read (err, data){ 
   if (err) {
       throw err;
     }
-  var jsonArray = JSON.parse(data);
 
+  var jsonArray = JSON.parse(data);
   var agreementArray = [];
   var disagreeArray = [];
   var noResSubmittedArray = [];
+
  	for (x=0; x < jsonArray.length; x++) {
- 		// This if statement returns any agreement entries in the contributor json file stored in data. 
 	  if (jsonArray[x]['contributor_agree'] == 'True') {	
 	    	agreementArray.push(jsonArray[x]);
 	  } else if (jsonArray[x]['contributor_agree'] == 'False') {
