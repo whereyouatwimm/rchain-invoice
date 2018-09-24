@@ -3,9 +3,38 @@
 <div align="center">   
 <!-- Click agree -->
 <!-- <h3>Confirmation</h3> -->
-<section>
+
+{{#if agreed }}
+  <section>
      <h3>
      Thank you for contributing! 
      </h3>
+     <p>e-signed at: {{ agree_time }}</p>
   </section>
+{{/if}}
+
+{{#if disagreed }}
+      <section>
+     <h3>
+     Thank you anyway! 
+     </h3>
+     <p>Disagreed: {{ disagree_time }}</p>
+  </section>
+
+{{/if}}
+
+{{#if error }}
+    <h3>Error</h3>
+<section>
+     <p>
+     Unfortunately, the invoice you're requesting doesn't exist.  
+     </p>
+     <p>
+     If you've received this error after clicking a link sent in your invoice email, please contact allanjcooper@gmail.com for further assistance.
+     </p>
+</section>
+{{/if}}
+
+
+
 </div>

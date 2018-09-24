@@ -15,25 +15,25 @@
           <p>
             Please enter the Ethereum address you have on file below.
           </p>
-            <input id="eth_address" name="eth_address" type="text" class="required">
+            <input id="eth_address" name="eth_address" type="text" size="42" class="required">
           <br/>
           <br/>
           <p>
             Please agree to the reward voted by entering the amount below.
           </p>
-            <input id="invoice_amount" name="invoice_amount" type="text" class="required">
+            $<input id="invoice_amount" name="invoice_amount" placeholder="{{ reward_usd }}" type="number" class="required">
             <br/>
             <br/>
           <p>
             Please e-sign by clicking "I Agree".
           </p>
-            <button type="button" name="load_reward_data" id="load_reward_data" class="btn btn-info" style="width:100px;" onClick="return validateAgree();">I Agree</button>
             <button type="button" name="load_contributor_data" id="load_contributor_data" class="btn btn-info" style="width:100px;" onClick="return validateDisagree();">I Disagree</button>
+            <button type="button" name="load_reward_data" id="load_reward_data" class="btn btn-info" style="width:100px;" onClick="return validateAgree();">I Agree</button>
         </form>
       </section>
       <br/>
       <br/>
-      <p>    Thank you for your contribution!
+      <p>Thank you for your contribution!
       </p>
     </div>
    </div>
@@ -50,19 +50,7 @@ function validateAgree() {
     var md5_eth = MD5(lowered_eth);
     console.log(md5_eth);
     if (md5_eth == '{{ eth_hash }}' && invoice_amount == {{ reward_usd }}) {
-        // alert('User agrees. Input data provided matches.');
-        
-        // send a post request to /invoices/:id/agreement 
-        // in the body of the request, send the agreed upon eth_address & invoice_amount in the body.
-        var data = { eth_hash: md5_eth, invoice_amount: invoice_amount };
-        $.ajax({
-          type: "POST",
-          url: "/invoices/{{notify_url}}/agree",
-          data: data,
-          dataType: "json",
-          contentType:"application/json"
-        });
-       window.location.replace("/invoices/{{ notify_url }}/agree");
+       window.location.replace("/{{ notify_url }}/agree");
     } else if (md5_eth != '{{ eth_hash }}' || invoice_amount != {{ reward_usd }}) {
             alert("Data provided doesn't match the values on file.")
     }
@@ -70,7 +58,6 @@ function validateAgree() {
 }
 
 function validateDisagree() {
-    // If disagree is clicked, we don't have to do any error checking. 
-    window.location.replace("/invoices/{{ notify_url }}/disagree");   
+    window.location.replace("/{{ notify_url }}/disagree");   
 }
 </script>
